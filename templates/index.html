@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Tagging System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #10b981;
+            --accent-color: #f43f5e;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --tag-bg: #e0e7ff;
+            --tag-color: #4338ca;
+            --tag-hover-bg: #c7d2fe;
+            --tag-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+            --error-color: #ef4444;
+            --success-color: #10b981;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e2e8f0, #f8fafc);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            padding: 30px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .header:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.7;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo span {
+            color: var(--secondary-color);
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            padding: 40px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 60px 18px 25px;
+            font-size: 1.1rem;
+            background-color: var(--light-color);
+            border: 2px solid transparent;
+            border-radius: 30px;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-button i {
+            font-size: 1.2rem;
+        }
+
+        .search-button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            position: relative;
+        }
+
+        .results-header {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .results-header i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            min-height: 60px;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--tag-bg);
+            color: var(--tag-color);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--tag-shadow);
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+            animation-delay: calc(var(--delay) * 100ms);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tag:hover {
+            background-color: var(--tag-hover-bg);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .tag:active {
+            transform: translateY(0px);
+        }
+
+        .tag::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0);
+            transition: transform 0.5s;
+        }
+
+        .tag:active::before {
+            transform: scale(2);
+            transition: transform 0s;
+        }
+
+        .tag-icon {
+            margin-right: 8px;
+            font-size: 0.85rem;
+        }
+
+        .tag-popularity {
+            margin-left: 8px;
+            background-color: rgba(67, 56, 202, 0.1);
+            color: var(--tag-color);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .message-container {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            display: none;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .error-message {
+            background-color: #fee2e2;
+            color: var(--error-color);
+            border-left: 4px solid var(--error-color);
+        }
+
+        .success-message {
+            background-color: #d1fae5;
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+        }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-toggle i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: var(--light-color);
+}
+
+body.dark-mode .container {
+    background: #1e293b;
+    color: var(--light-color);
+}
+
+body.dark-mode .search-input {
+    background-color: #334155;
+    color: white;
+    border-color: #475569;
+}
+
+body.dark-mode .search-input::placeholder {
+    color: #cbd5e1;
+}
+
+body.dark-mode .search-button {
+    background-color: var(--secondary-color);
+}
+
+body.dark-mode .results-header i {
+    color: var(--secondary-color);
+}
+
+body.dark-mode .tag {
+    background-color: #334155;
+    color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .tag:hover {
+    background-color: #475569;
+}
+
+body.dark-mode .tag-popularity {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #a5b4fc;
+}
+
+body.dark-mode .message-container.error-message {
+    background-color: #7f1d1d;
+    color: #fecaca;
+    border-left-color: #f87171;
+}
+
+body.dark-mode .message-container.success-message {
+    background-color: #064e3b;
+    color: #6ee7b7;
+    border-left-color: #34d399;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </div>
+            <h1 class="logo">Tag<span>Wizard</span></h1>
+            <p class="tagline">Intelligent Question Tagging with Advanced AI</p>
+        </div>
+
+        <div class="main-content">
+            <div class="search-wrapper">
+                <input type="text" class="search-input" placeholder="Enter your programming question..." id="questionInput">
+                <button class="search-button" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+
+            <div class="message-container error-message" id="errorMessage"></div>
+            <div class="message-container success-message" id="successMessage"></div>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="results-section">
+                <h2 class="results-header">
+                    <i class="fas fa-lightbulb"></i>
+                    Suggested Tags
+                </h2>
+                <div class="tags-container" id="tagsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionInput = document.getElementById('questionInput');
+            const searchButton = document.getElementById('searchButton');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const tagsContainer = document.getElementById('tagsContainer');
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            // Theme toggle functionality
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const icon = themeToggle.querySelector('i');
+                if (icon.classList.contains('fa-moon')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+            
+            // Search button click handler
+            searchButton.addEventListener('click', function() {
+                const question = questionInput.value.trim();
+                if (!question) {
+                    showError('Please enter a question');
+                    return;
+                }
+                
+                // Clear previous results
+                tagsContainer.innerHTML = '';
+                hideMessages();
+                showLoading();
+                
+                // Make API call to get tags
+                fetch('/get_tags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    hideLoading();
+                    if (data.tags && data.tags.length > 0) {
+                        displayTags(data.tags);
+                        showSuccess('Tags generated successfully!');
+                    } else {
+                        showError('No tags found for this question. Try a different query.');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    showError('Error getting tags: ' + error.message);
+                });
+            });
+            
+            // Allow pressing Enter key to search
+            questionInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchButton.click();
+                }
+            });
+            
+            // Function to display tags
+            function displayTags(tags) {
+                tagsContainer.innerHTML = '';
+                
+                tags.forEach((tag, index) => {
+                    const tagElement = document.createElement('div');
+                    tagElement.className = 'tag';
+                    tagElement.style.setProperty('--delay', index);
+                    
+                    const iconElement = document.createElement('span');
+                    iconElement.className = 'tag-icon';
+                    iconElement.innerHTML = '<i class="fas fa-tag"></i>';
+                    
+                    const textElement = document.createElement('span');
+                    textElement.textContent = tag;
+                    
+                    tagElement.appendChild(iconElement);
+                    tagElement.appendChild(textElement);
+                    
+                    tagsContainer.appendChild(tagElement);
+                });
+            }
+            
+            // Utility functions for showing/hiding elements
+            function showLoading() {
+                loadingSpinner.style.display = 'block';
+            }
+            
+            function hideLoading() {
+                loadingSpinner.style.display = 'none';
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            function hideMessages() {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

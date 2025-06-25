@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - TagWizard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    /* Same styles as login.html */
+    :root {
+      --primary-color: #6366f1;
+      --primary-hover: #4f46e5;
+      --dark-color: #1e293b;
+      --light-color: #f8fafc;
+      --error-color: #ef4444;
+      --success-color: #10b981;
+      --border-radius: 12px;
+      --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e2e8f0, #f8fafc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-header {
+      margin-bottom: 30px;
+    }
+
+    .login-header h1 {
+      font-size: 2rem;
+      color: var(--primary-color);
+    }
+
+    .login-header p {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .login-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: var(--error-color);
+    }
+
+    .success {
+      color: var(--success-color);
+    }
+
+    .extra-links {
+      margin-top: 15px;
+      font-size: 0.85rem;
+    }
+
+    .extra-links a {
+      color: var(--primary-color);
+      text-decoration: none;
+      margin: 0 8px;
+    }
+
+    .extra-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1>Create your <span style="color: #10b981;">IntelliTag</span> account</h1>
+      <p>Start your journey with our AI-powered tagging system</p>
+    </div>
+
+    <form id="signupForm" action="/register" method="POST">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required placeholder="John Doe"/>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com"/>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Create Password</label>
+        <input type="password" id="password" name="password" required placeholder="••••••••"/>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required placeholder="••••••••"/>
+      </div>
+
+      <button type="submit" class="login-btn" onclick="return validatePasswords()">Sign Up</button>
+    </form>
+
+    <script>
+      function validatePasswords() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const messageBox = document.getElementById('messageBox');
+        
+        if (password !== confirmPassword) {
+          messageBox.textContent = 'Passwords do not match!';
+          messageBox.className = 'message error';
+          return false;
+        }
+        return true;
+      }
+    </script>
+
+    <div class="message {{ 'error' if error }}" id="messageBox">
+      {{ error if error }}
+    </div>
+
+    <div class="extra-links">
+      <a href="{{ url_for('login') }}">Already have an account?</a>
+    </div>
+  </div>
+</body>
+</html>
